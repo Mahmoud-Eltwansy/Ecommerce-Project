@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\Dashboard\CategoriesController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])
+Route::group([
+    'middleware' => ['auth', 'verified'],
+    'as' => 'dashboard.',
+    'prefix' => 'dashboard'
+], function () {
+    Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard');
-    Route::resource('dashboard/categories', CategoriesController::class);
+    Route::resource('/categories', CategoriesController::class);
 });

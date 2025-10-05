@@ -14,8 +14,13 @@
             {{ session('success') }}
         </div>
     @endif
+    @if (session()->has('info'))
+        <div class="alert alert-info">
+            {{ session('info') }}
+        </div>
+    @endif
     <div class="mb-5">
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
+        <a href="{{ route('dashboard.categories.create') }}" class="btn btn-primary">Create</a>
     </div>
     <table class="table">
         <thead>
@@ -37,12 +42,12 @@
                     <td>{{ $category->parent_id }}</td>
                     <td>{{ $category->created_at }}</td>
                     <td>
-                        <a href="{{ route('categories.edit', [$category->id]) }}"
+                        <a href="{{ route('dashboard.categories.edit', [$category->id]) }}"
                             class="btn btn-sm btn-outline-success">Edit</a>
 
                     </td>
                     <td>
-                        <form action="{{ route('categories.destroy', [$category->id]) }}" method="post">
+                        <form action="{{ route('dashboard.categories.destroy', [$category->id]) }}" method="post">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
