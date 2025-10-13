@@ -17,17 +17,17 @@ class CategoriesController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::query();
+        // SELECT categories.*,parents.name FROM categories
+        // LEFT JOIN categories as parents ON parents.id=categories.parent_id
 
-        if ($name = $request->input('name')) {
-            $query->where('name', 'LIKE', "%{$name}%");
-        }
+        $categories = Category::leftJoin('categories as parents', 'parents.id', '=', 'categories.parent_id')
+            ->select([
+                'categories.*',
+                'parents.name as parent_name'
+            ])->filter($request->query())
+            ->orderBy('categories.name')
+            ->paginate(2);
 
-        if ($status = $request->input('status')) {
-            $query->whereStatus($status);
-        }
-
-        $categories = $query->paginate(2);
         return view('dashboard.categories.index', compact('categories'));
     }
 
@@ -66,7 +66,7 @@ class CategoriesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
         //
     }
@@ -74,19 +74,19 @@ class CategoriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Category $category)
     {
-        try {
-            $category = Category::findOrFail($id);
-        } catch (Exception $e) {
-            return redirect()->route('dashboard.categories.index')->with('info', 'Page Not Found');
-        }
+        // try {
+        //     $category = Category::findOrFail($category->id);
+        // } catch (Exception $e) {
+        //     return redirect()->route('dashboard.categories.index')->with('info', 'Page Not Found');
+        // }
 
 
 
         // SELECT * FROM categories WHERE id <> $id AND (parent_id IS NULL OR parent_id <> $id)
         // get all categories except the one we want to edit and its children
-        $parents = Category::where('id', '<>', $id)
+        $parents = Category::where('id', '<>', $id = $category->id)
             ->where(function ($query) use ($id) {
                 $query->whereNull('parent_id')
                     ->orWhere('parent_id', '<>', $id);
@@ -99,13 +99,12 @@ class CategoriesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category)
     {
         // Request Validation
-        $request->validate(Category::rules($id));
+        $request->validate(Category::rules($category->id));
 
         // Getting Category and its Old Image
-        $category = Category::findOrFail($id);
         $old_image = $category->image;
 
         // Prepare Data
@@ -132,22 +131,72 @@ class CategoriesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        // Find the category and delete
-        $category = Category::findOrFail($id);
         $category->delete();
-
-        // Delete Image if exists
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
-        }
 
         // Redirect With Message
         return redirect()->route('dashboard.categories.index')
             ->with('success', 'Category Deleted!');
     }
 
+    /**
+     * Get all trashed categories.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function trash(Request $request)
+    {
+        $categories = Category::onlyTrashed()->filter($request->query())->paginate();
+        return view('dashboard.categories.trash', compact('categories'));
+    }
+
+    /**
+     * Restore a trashed category.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(Request $request, $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->restore();
+        $category->save();
+
+        return redirect()->route('dashboard.categories.trash')->with('success', 'Category Restored Succussfully!');
+    }
+
+    /**
+     * Permanently delete a category.
+     *
+     * This method will delete a category without the ability to restore it.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function forceDelete(Request $request, $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->forceDelete();
+        // Delete Image if exists
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
+        }
+
+
+        return redirect()->route('dashboard.categories.trash')->with('success', 'Category Deleted Forever!');
+    }
+
+
+
+    /**
+     * Uploads a file to the uploads folder and returns the path.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return string
+     */
     public function uploadImage(Request $request)
     {
         // Check If Request Has File

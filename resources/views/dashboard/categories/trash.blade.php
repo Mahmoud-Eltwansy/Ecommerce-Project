@@ -1,25 +1,20 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Categories')
+@section('title', 'Trashed Categories')
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Categories</li>
+    <li class="breadcrumb-item active"><a href="{{ route('dashboard.categories.index') }}">Categories</a></li>
+    <li class="breadcrumb-item active">Trash</li>
 
 @endsection
 @section('content')
 
-    {{-- New Category Btn --}}
-    <div class="d-flex justify-content-start">
-        <div class="mb-5 ">
-            <a href="{{ route('dashboard.categories.create') }}" class="btn btn-outline-primary">Create</a>
-        </div>
-
-        <div class="mb-5 mx-4">
-            <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-outline-danger">Trash Categories</a>
-        </div>
+    {{-- Back Btn --}}
+    <div class="mb-5">
+        <a href="{{ route('dashboard.categories.index') }}" class="btn btn-outline-primary">Back</a>
     </div>
-    {{-- End Category Btn --}}
+    {{-- End Back Btn --}}
 
 
     {{-- Alerts --}}
@@ -41,16 +36,15 @@
     {{-- End Search Form --}}
 
 
-    {{-- Categories Table --}}
+    {{-- Trashed Categories Table --}}
     <table class="table">
         <thead>
             <tr>
                 <th></th>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Parent</th>
                 <th>Status</th>
-                <th>Created At</th>
+                <th>Deleted At</th>
                 <th colspan="2"></th>
             </tr>
         </thead>
@@ -60,31 +54,33 @@
                     <td><img src="{{ asset('storage/' . $category->image) }}" alt="" height="50px"></td>
                     <td>{{ $category->id }}</td>
                     <td>{{ $category->name }}</td>
-                    <td>{{ $category->parent_name }}</td>
                     <td>{{ $category->status }}</td>
-                    <td>{{ $category->created_at }}</td>
+                    <td>{{ $category->deleted_at }}</td>
                     <td>
-                        <a href="{{ route('dashboard.categories.edit', [$category->id]) }}"
-                            class="btn btn-sm btn-success">Edit</a>
+                        <form action="{{ route('dashboard.categories.restore', [$category->id]) }}" method="post">
+                            @csrf
+                            @method('put')
+                            <button type="submit" class="btn btn-sm btn-success">Restore</button>
+                        </form>
 
                     </td>
                     <td>
-                        <form action="{{ route('dashboard.categories.destroy', [$category->id]) }}" method="post">
+                        <form action="{{ route('dashboard.categories.force-delete', [$category->id]) }}" method="post">
                             @csrf
                             @method('delete')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-sm btn-danger">Force Delete</button>
                         </form>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8">No Categories defined.</td>
+                    <td colspan="7">No Categories defined.</td>
                 </tr>
             @endforelse
 
         </tbody>
     </table>
     {{ $categories->withQueryString()->links() }}
-    {{-- End Categories Table --}}
+    {{-- End Trashed Categories Table --}}
 
 @endsection
