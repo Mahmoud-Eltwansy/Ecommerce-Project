@@ -1,21 +1,5 @@
-{{-- @if ($errors->any())
-    <div class="alert alert-danger">
-        <h3>Error Occured!</h3>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-
-@endif --}}
-
 <div class="form-group">
-    <label for="">Category Name</label>
-    <input type="text" name="name" value="{{ old('name', $category->name) }}" @class(['form-control', 'is-invalid' => $errors->has('name')])>
-    @error('name')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
+    <x-form.input name="name" :value="$category->name" label="Category Name" />
 </div>
 <div class="form-group">
     <label for="">Parent Category</label>
@@ -35,44 +19,25 @@
 </div>
 
 <div class="form-group">
-    <label for="">Description</label>
-    <textarea name="description" @class(['form-control', 'is-invalid' => $errors->has('description')])>{{ old('description', $category->description) }}
-    </textarea>
-    @error('description')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
+    <x-form.textarea name="description" :value="$category->description" label="Description" />
 </div>
 
 <div class="form-group">
     <label for="">Image</label>
-    <input type="file" name="image" @class(['form-control', 'is-invalid' => $errors->has('image')]) accept="image/*" />
+    <x-form.input type="file" name="image" accept="image/*" />
+
     @if ($category->image)
         <img src="{{ asset('storage/' . $category->image) }}" alt="" height="50px">
     @endif
-    @error('image')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
+
 </div>
 
 <div class="form-group">
-    <label for="">Status</label>
+
     <div>
-        <div class="form-check ">
-            <input class="form-check-input" type="radio" name="status" value="active" @checked(old('status', $category->status) == 'active')>
-            <label class="form-check-label">
-                Active
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="status"value="archived" @checked(old('status', $category->status) == 'archived')>
-            <label class="form-check-label">
-                Archived
-            </label>
-        </div>
+        <x-form.radio name="status" :checked="$category->status" :options="['active' => 'Active', 'archived' => 'Archived']" label="Status" />
     </div>
-    @error('status')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
+
 </div>
 <div class="form-group">
     <button type="submit" class="btn btn-primary">{{ $btnText ?? 'Save' }}</button>

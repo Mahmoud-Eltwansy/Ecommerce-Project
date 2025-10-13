@@ -39,7 +39,7 @@ class Category extends Model
                 'max:255',
                 'min:3',
                 Rule::unique('categories', 'name')->ignore($id),
-                'filter:php,laravel'
+                'filter:php,laravel',
             ],
             'parent_id' => [
                 'nullable',

@@ -9,19 +9,33 @@
 @endsection
 @section('content')
 
-    @if (session()->has('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if (session()->has('info'))
-        <div class="alert alert-info">
-            {{ session('info') }}
-        </div>
-    @endif
+    {{-- New Category Btn --}}
     <div class="mb-5">
         <a href="{{ route('dashboard.categories.create') }}" class="btn btn-primary">Create</a>
     </div>
+    {{-- End Category Btn --}}
+
+
+    {{-- Alerts --}}
+    <x-alert type="success" />
+    <x-alert type="info" />
+    {{-- End Alerts --}}
+
+
+    {{-- Search Form --}}
+    <form action="{{ URL::current() }}" method="get" class="d-flex justify-content-between mb-4">
+        <x-form.input name="name" placeholder="Name of the category" class="mx-2" :value="request('name')" />
+        <select name="status" class="form-control mx-2">
+            <option value="">All</option>
+            <option value="active" @selected(request('status') == 'active')>Active</option>
+            <option value="archived" @selected(request('status') == 'archived')>Archived</option>
+        </select>
+        <button class="btn btn-dark mx-2">Search</button>
+    </form>
+    {{-- End Search Form --}}
+
+
+    {{-- Categories Table --}}
     <table class="table">
         <thead>
             <tr>
@@ -29,6 +43,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Parent</th>
+                <th>Status</th>
                 <th>Created At</th>
                 <th colspan="2"></th>
             </tr>
@@ -40,6 +55,7 @@
                     <td>{{ $category->id }}</td>
                     <td>{{ $category->name }}</td>
                     <td>{{ $category->parent_id }}</td>
+                    <td>{{ $category->status }}</td>
                     <td>{{ $category->created_at }}</td>
                     <td>
                         <a href="{{ route('dashboard.categories.edit', [$category->id]) }}"
@@ -62,4 +78,7 @@
 
         </tbody>
     </table>
+    {{ $categories->withQueryString()->links() }}
+    {{-- End Categories Table --}}
+
 @endsection
