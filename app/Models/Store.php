@@ -20,4 +20,9 @@ class Store extends Model
                 $store->slug = Str::slug($store->name);
         });
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

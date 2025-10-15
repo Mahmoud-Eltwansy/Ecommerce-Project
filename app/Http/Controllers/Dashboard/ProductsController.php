@@ -14,8 +14,9 @@ class ProductsController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::filter($request->query())->paginate();
-
+        $products = Product::with(['category', 'store'])
+            ->filter($request->query())
+            ->paginate();
         return view('dashboard.products.index', compact('products'));
     }
 

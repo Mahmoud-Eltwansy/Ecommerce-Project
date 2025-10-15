@@ -11,8 +11,8 @@ Route::group([
     'as' => 'dashboard.',
     'prefix' => 'dashboard'
 ], function () {
-    Route::get('/', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Categories
     Route::get('categories/trash', [CategoriesController::class, 'trash'])->name('categories.trash');

@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
@@ -18,9 +20,10 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => fake()->department,
+            'parent_id' => Category::inRandomOrder()->first()->id,
             'description' => fake()->sentence(15),
-            'image' => fake()->imageUrl(),
-
+            'image' => fake()->placeholder(),
+            'status' => Arr::random(['active', 'archived']),
         ];
     }
 }

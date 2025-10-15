@@ -17,17 +17,12 @@ class CategoriesController extends Controller
      */
     public function index(Request $request)
     {
-        // SELECT categories.*,parents.name FROM categories
-        // LEFT JOIN categories as parents ON parents.id=categories.parent_id
 
-        $categories = Category::leftJoin('categories as parents', 'parents.id', '=', 'categories.parent_id')
-            ->select([
-                'categories.*',
-                'parents.name as parent_name'
-            ])->filter($request->query())
+        $categories = Category::with(['parent'])
+            ->withCount('products')
+            ->filter($request->query())
             ->orderBy('categories.name')
-            ->paginate(10);
-
+            ->paginate();
         return view('dashboard.categories.index', compact('categories'));
     }
 
@@ -68,7 +63,8 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        // $category = Category::with(['products.store'])->findOrFail($id);
+        return view('dashboard.categories.show', compact('category'));
     }
 
     /**
