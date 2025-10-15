@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Rules\Filter;
+use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Validation\Rules\File;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, FilterTrait;
     protected $fillable = [
         'name',
         'slug',
@@ -38,23 +39,6 @@ class Category extends Model
             if (empty($category->slug))
                 $category->slug = Str::slug($category->name);
         });
-    }
-
-    /**
-     * Scope a query to filter categories by name and status.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param array $filters
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeFilter(Builder $builder, array $filters)
-    {
-        if ($name = $filters['name'] ?? false) {
-            $builder->where('categories.name', 'LIKE', "%{$name}%");
-        }
-        if ($status = $filters['status'] ?? false) {
-            $builder->whereStatus($status);
-        }
     }
 
     /**

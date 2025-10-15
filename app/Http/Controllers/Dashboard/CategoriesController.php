@@ -26,7 +26,7 @@ class CategoriesController extends Controller
                 'parents.name as parent_name'
             ])->filter($request->query())
             ->orderBy('categories.name')
-            ->paginate(2);
+            ->paginate(10);
 
         return view('dashboard.categories.index', compact('categories'));
     }
@@ -162,7 +162,6 @@ class CategoriesController extends Controller
     {
         $category = Category::onlyTrashed()->findOrFail($id);
         $category->restore();
-        $category->save();
 
         return redirect()->route('dashboard.categories.trash')->with('success', 'Category Restored Succussfully!');
     }
@@ -195,7 +194,6 @@ class CategoriesController extends Controller
      * Uploads a file to the uploads folder and returns the path.
      *
      * @param \Illuminate\Http\Request $request
-     * @return string
      */
     public function uploadImage(Request $request)
     {
