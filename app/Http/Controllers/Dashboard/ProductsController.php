@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductsController extends Controller
 {
@@ -49,16 +51,51 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
+        $tags = implode(',', $product->tags()->pluck('name')->toArray());
 
-        return view('dashboard.products.edit', compact('product'));
+        return view('dashboard.products.edit', compact('product', 'tags'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $tag_ids = [];
+        // Validation
+        $request->validate(Product::rules($product->id));
+
+        // Update the product
+        $product->update($request->except('tags'));
+
+        $tags = json_decode($request->post('tags'));
+        // Convert the tags array into a collection of strings
+        $tags = collect($tags)->pluck('value');
+
+        // Get the slugs of these tags
+        $slugs = $tags->map(fn($t) => Str::slug($t));
+
+        // Get the tags in the DB that match with the slugs
+        $existingTags = Tag::whereIn('slug', $slugs)->get();
+
+        foreach ($tags as $tagName) {
+            $slug = Str::slug($tagName);
+            // search if the current tag in the loop exists in the returned ones from DB
+            $tag = $existingTags->where('slug', $slug)->first();
+            if (!$tag) {
+                //Creat new tag if it doesn't exist
+                $tag = Tag::create([
+                    'name' => $tagName,
+                    'slug' => $slug
+                ]);
+            }
+            $tag_ids[] = $tag->id;
+        }
+        // Save all the tags with deletion process of the old ones
+        $product->tags()->sync($tag_ids);
+
+
+        return redirect()->route('dashboard.products.index')->with('success', 'Product Updated!');
     }
 
     /**
