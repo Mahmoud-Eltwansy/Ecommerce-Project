@@ -26,7 +26,7 @@ class Product extends Model
         static::addGlobalScope('store', function (Builder $builder) {
             $user = Auth::user();
             // To check if the user is admin or not
-            if ($user->store_id) {
+            if ($user?->store_id) {
                 $builder->where('store_id', '=', $user->store_id);
             }
         });
@@ -83,5 +83,30 @@ class Product extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        $query->where('status', '=', 'active');
+    }
+
+    // Accessor
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return asset('storage\default-product-image.webp');
+        }
+        if (Str::startsWith($this->image, ['http://', 'https://'])) {
+            return $this->image;
+        }
+        return asset('storage' . $this->image);
+    }
+
+    public function getDiscountAttribute()
+    {
+        if (!$this->compare_price)
+            return 0;
+        return floor(($this->compare_price - $this->price) / $this->compare_price * 100);
     }
 }
