@@ -18,6 +18,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get();
 
 // Front Products Routes
 Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
