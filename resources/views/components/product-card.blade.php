@@ -18,6 +18,7 @@
         <ul class="review">
             @php
                 $review = floor($product->rating);
+
                 $reviewMinusFull = 5 - $review;
             @endphp
             @for ($i = 1; $i <= $review; $i++)

@@ -95,7 +95,7 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('storage\default-product-image.webp');
+            return asset('storage\default-product-image.png');
         }
         if (Str::startsWith($this->image, ['http://', 'https://'])) {
             return $this->image;

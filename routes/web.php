@@ -18,7 +18,6 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get();
 
 // Front Products Routes
 Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
@@ -30,6 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::post('/paypal/notify', function () {
+    echo 'Webhook';
 });
 
 require __DIR__ . '/auth.php';

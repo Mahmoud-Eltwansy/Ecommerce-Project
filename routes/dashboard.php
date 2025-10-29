@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group([
-    'middleware' => ['auth', 'verified'],
+    'middleware' => ['auth', 'auth.type:admin,super-admin'],
     'as' => 'dashboard.',
     'prefix' => 'dashboard'
 ], function () {

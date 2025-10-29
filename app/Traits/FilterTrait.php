@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 trait FilterTrait
 {
     /**
-     * Scope a query to filter categories by name and status.
+     * Scope a query to filter by name and status.
      *
      * @param \Illuminate\Database\Eloquent\Builder $builder
      * @param array $filters
