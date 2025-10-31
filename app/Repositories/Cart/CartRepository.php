@@ -24,10 +24,10 @@ interface CartRepository
     /**
      * Update the quantity of a product in the cart.
      *
-     * @param \App\Models\Product $product
+     * @param $id
      * @param int $quantity
      */
-    public function update(Product $product, int $quantity);
+    public function update($id, int $quantity);
 
     /**
      * Remove a product from the cart.

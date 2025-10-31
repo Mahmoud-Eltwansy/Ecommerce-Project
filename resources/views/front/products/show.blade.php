@@ -54,7 +54,6 @@
                             </h3>
                             <p class="info-text">{{ $product->description }}</p>
                             <form action="{{ route('cart.store') }}" method="post">
-                                @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <div class="row">
                                     <div class="col-lg-4 col-md-4 col-12">
@@ -91,7 +90,7 @@
                                     <div class="col-lg-4 col-md-4 col-12">
                                         <div class="form-group quantity">
                                             <label for="color">Quantity</label>
-                                            <select class="form-control" name="quantity">
+                                            <select class="form-control quantity-select" name="quantity">
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -105,7 +104,10 @@
                                     <div class="row align-items-end">
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div class="button cart-button">
-                                                <button class="btn" type="submit" style="width: 100%;">Add to
+                                                <button class="btn add-to-cart-btn"
+                                                    data-product-id="{{ $product->id }}" type="button"
+                                                    style="width: 100%;">Add
+                                                    to
                                                     Cart</button>
                                             </div>
                                         </div>
@@ -353,6 +355,9 @@
 
 
     @push('scripts')
+        <script>
+            const csrf_token = "{{ csrf_token() }}";
+        </script>
         <script type="text/javascript">
             const current = document.getElementById("current");
             const opacity = 0.6;
@@ -371,6 +376,8 @@
                 });
             });
         </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     @endpush
+    @vite('resources/js/cart.js')
 
 </x-front-layout>

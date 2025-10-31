@@ -32,30 +32,39 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate Request
         $request->validate([
             'product_id' => ['required', 'int', 'exists:products,id'],
             'quantity' => ['nullable', 'int', 'min:1']
         ]);
-
+        // Add to Cart
         $product = Product::findOrFail($request->post('product_id'));
         $this->cart->add($product, $request->post('quantity'));
 
+        // For AJAX request
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Product added to cart',
+            ], 201);
+        }
+        // For normal request
         return redirect()->route('cart.index')->with('success', 'Product added to cart!');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+        // Validate Request
         $request->validate([
-            'product_id' => ['required', 'int', 'exists:products,id'],
-            'quantity' => ['nullable', 'int', 'min:1']
+            'quantity' => ['required', 'int', 'min:1']
         ]);
-
-        $product = Product::findOrFail($request->post('product_id'));
-        $this->cart->update($product, $request->post('quantity'));
-        return redirect()->back()->with('success', 'Product updated!');
+        // Update Cart Item quantity
+        $this->cart->update($id, $request->post('quantity'));
+        return [
+            'message' => 'Cart Updated',
+        ];
     }
 
     /**
@@ -64,6 +73,8 @@ class CartController extends Controller
     public function destroy($id)
     {
         $this->cart->delete($id);
-        return redirect()->back()->with('success', 'Product deleted from cart!');
+        return [
+            'message' => 'Item Deleted',
+        ];
     }
 }
