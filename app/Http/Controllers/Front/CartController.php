@@ -22,6 +22,9 @@ class CartController extends Controller
      */
     public function index()
     {
+        if ($this->cart->get()->isEmpty()) {
+            return redirect()->route('home')->with('info', 'Your cart is empty. Please add items to your cart.');
+        }
         return view('front.cart', [
             'cart' => $this->cart
         ]);

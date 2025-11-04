@@ -33,9 +33,10 @@ class CartModelRepository implements CartRepository
                 'quantity' => $quantity
 
             ]);
-            return $this->get()->push($cart);
+            $this->get()->push($cart);
+            return $cart;
         }
-        $item->increment('quantity', $quantity);
+        return $item->increment('quantity', $quantity);
     }
 
     public function update($id, int $quantity): void

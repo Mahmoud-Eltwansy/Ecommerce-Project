@@ -20,12 +20,14 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $id = rand(1, 1000);
+        $quantity = rand(1, 1000);
         return [
             'name' => fake()->productName,
             'description' => fake()->sentence(15),
             'image' => "https://picsum.photos/id/{$id}/640/480",
             'price' => fake()->randomFloat(1, 1, 499),
             'compare_price' => fake()->randomFloat(1, 499, 999),
+            'quantity' => $quantity,
             'category_id' => Category::inRandomOrder()->first()->id,
             'store_id' => Store::inRandomOrder()->first()->id,
             'featured' => rand(0, 1),
