@@ -29,7 +29,13 @@ class CheckoutController extends Controller
     public function store(Request $request, CartRepository $cart)
     {
         // Validate Request
-        $request->validate([]);
+        $request->validate([
+            'addr.billing.first_name' => ['required', 'string', 'max:255'],
+            'addr.billing.last_name' => ['required', 'string', 'max:255'],
+            'addr.billing.email' => ['required', 'string', 'max:255'],
+            'addr.billing.phone_number' => ['required', 'string', 'max:255'],
+            'addr.billing.city' => ['required', 'string', 'max:255'],
+        ]);
 
         // Group cart items by store
         $items = $cart->get()->groupBy('product.store_id')->all();
@@ -40,7 +46,6 @@ class CheckoutController extends Controller
         try {
             // Create orders per store
             foreach ($items as $store_id => $cart_items) {
-
                 // Create Order
                 $order = Order::create([
                     'store_id' => $store_id,
@@ -73,7 +78,7 @@ class CheckoutController extends Controller
             DB::rollBack();
             throw $e;
         }
-        return redirect()->route('home')
-            ->with('success', 'Your order has been placed successfully.');
+        // return redirect()->route('home')
+        //     ->with('success', 'Your order has been placed successfully.');
     }
 }

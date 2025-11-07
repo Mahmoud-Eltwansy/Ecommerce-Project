@@ -27,7 +27,7 @@ class Product extends Model
             $user = Auth::user();
             // To check if the user is admin or not
             if ($user?->store_id) {
-                $builder->where('store_id', '=', $user->store_id);
+                // $builder->where('store_id', '=', $user->store_id);
             }
         });
 

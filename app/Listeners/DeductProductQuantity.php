@@ -23,17 +23,13 @@ class DeductProductQuantity
      */
     public function handle(object $event): void
     {
-        // $cart = Cart::get();
         $order = $event->order;
 
-        foreach ($order->products as $item) {
-            $item->decrement('quantity', $item->pivot->quantity);
+        try {
+            foreach ($order->products as $item) {
+                $item->decrement('quantity', $item->pivot->quantity);
+            }
+        } catch (\Throwable $th) {
         }
-        // foreach ($cart as $item) {
-        //     Product::where('id', $item->product_id)
-        //         ->update([
-        //             'quantity' => DB::raw("quantity -  {$item->quantity}")
-        //         ]);
-        // }
     }
 }
