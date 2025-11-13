@@ -43,6 +43,10 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        Fortify::twoFactorChallengeView(function () {
+            return view('front.auth.two-factor-challenge');
+        });
+
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
@@ -54,6 +58,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
+        // Customize authentication and views based on guard
         if (Config::get('fortify.guard') == 'admin') {
             Fortify::authenticateUsing([new AuthenticateUser(), 'authenticate']);
             Fortify::viewPrefix('auth.');
