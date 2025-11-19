@@ -18,6 +18,10 @@ class Product extends Model
 
     protected $fillable = ['name', 'slug', 'description', 'image', 'price', 'compare_price', 'options', 'rating', 'featured', 'status', 'category_id', 'store_id'];
 
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'image'];
+
+    protected $appends = ['image_url'];
+
     protected static function boot()
     {
         parent::boot();
@@ -108,5 +112,35 @@ class Product extends Model
         if (!$this->compare_price)
             return 0;
         return floor(($this->compare_price - $this->price) / $this->compare_price * 100);
+    }
+
+    public function scopeFilter(Builder $builder, $filters)
+    {
+        $options = array_merge([
+            'category_id' => null,
+            'store_id' => null,
+            'tag_id' => null,
+            'status' => 'active'
+        ], $filters);
+
+        $builder->when($options['status'], function ($builder, $value) {
+            $builder->where('status', $value);
+        });
+        $builder->when($options['store_id'], function ($builder, $value) {
+            $builder->where('store_id', $value);
+        });
+
+        $builder->when($options['category_id'], function ($builder, $value) {
+            $builder->where('category_id', $value);
+        });
+
+        $builder->when($options['tag_id'], function ($builder, $value) {
+            $builder->whereExists(function ($builder) use ($value) {
+                $builder->select(1)
+                    ->from('product_tag')
+                    ->whereRaw('product_id = products.id')
+                    ->where('tag_id', $value);
+            });
+        });
     }
 }
