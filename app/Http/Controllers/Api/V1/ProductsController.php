@@ -6,10 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 
 class ProductsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum'])->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -27,6 +34,12 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+        if (!$user->tokenCan('products.create')) {
+            return response([
+                'message' => 'Not Allowd'
+            ], 403);
+        }
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'min:3', 'unique:products,name'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
@@ -54,6 +67,12 @@ class ProductsController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $user = $request->user();
+        if (!$user->tokenCan('products.update')) {
+            return response([
+                'message' => 'Not Allowd'
+            ], 403);
+        }
         $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255', 'min:3', 'unique:products,name,' . $product->id],
             'category_id' => ['sometimes', 'required', 'integer', 'exists:categories,id'],
@@ -70,12 +89,32 @@ class ProductsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return Response::json([
-            'message' => 'Product deleted successfully.'
-        ], 200);
+        $user = Auth::guard('sanctum')->user();
+        if (!$user->tokenCan('products.delete')) {
+            return response([
+                'message' => 'Not Allowd'
+            ], 403);
+        }
+        try {
+            $product = Product::findOrFail($id);
+            $deleted = $product->delete();
+
+            if (!$deleted) {
+                return response()->json([
+                    'message' => 'Deletion failed.'
+                ], 500);
+            }
+
+            return response()->json([
+                'message' => 'Product deleted successfully..',
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Unable to delete a product.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
     }
 }

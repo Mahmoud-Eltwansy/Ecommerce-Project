@@ -74,6 +74,7 @@ return [
 
     'currency' => 'USD',
 
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
@@ -189,4 +190,7 @@ return [
         'Currency' => App\Helpers\Currency::class,
     ])->toArray(),
 
+
+
+    'api_key' => env('API_KEY'),
 ];
