@@ -43,14 +43,16 @@
                                 <ul class="menu-top-link">
                                     <li>
                                         <div class="select-position">
-                                            <select id="select4">
-                                                <option value="0" selected>$ USD</option>
-                                                <option value="1">€ EURO</option>
-                                                <option value="2">$ CAD</option>
-                                                <option value="3">₹ INR</option>
-                                                <option value="4">¥ CNY</option>
-                                                <option value="5">৳ BDT</option>
-                                            </select>
+                                            <form action="{{ route('currency.store') }}" method="post">
+                                                @csrf
+                                                <select name="currency_code" onchange="this.form.submit()">
+                                                    <option value="USD" @selected('USD' === session('currency_code') ?? config('app.currency'))>USD</option>
+                                                    <option value="EGP" @selected('EGP' === session('currency_code') ?? config('app.currency'))>EGP</option>
+                                                    <option value="EUR" @selected('EUR' === session('currency_code') ?? config('app.currency'))>EURO</option>
+                                                    <option value="SAR" @selected('SAR' === session('currency_code') ?? config('app.currency'))>SAR</option>
+                                                    <option value="QAR" @selected('QAR' === session('currency_code') ?? config('app.currency'))>QAR</option>
+                                                </select>
+                                            </form>
                                         </div>
                                     </li>
                                     <li>

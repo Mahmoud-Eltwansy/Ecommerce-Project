@@ -3,6 +3,7 @@
 use App\Http\Controllers\Front\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckoutController;
+use App\Http\Controllers\Front\CurrencyConverterController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\ProductsController;
 use App\Http\Controllers\ProfileController;
@@ -39,9 +40,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Two Factor auth Route
 Route::get('auth/user/2fa', [TwoFactorAuthenticationController::class, 'index']);
 
-
+// Currency Converter Route
+Route::post('currency', [CurrencyConverterController::class, 'store'])->name('currency.store');
 
 
 // require __DIR__ . '/auth.php';
