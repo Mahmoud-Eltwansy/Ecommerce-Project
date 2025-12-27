@@ -1,5 +1,3 @@
-import Tagify from '@yaireo/tagify'
-@import("Tagify from '@yaireo/tagify'")
 <div class="form-group">
     <x-form.input label="Product Name" class="form-control-lg" role="input" name="name" :value="$product->name" />
 </div>

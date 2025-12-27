@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\Dashboard\AdminsController;
 use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\OrdersController;
 use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\ProfileController;
+use App\Http\Controllers\Dashboard\RolesController;
+use App\Http\Controllers\Dashboard\UsersController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::group([
-    'middleware' => ['auth:admin'],
+    'middleware' => ['auth:admin,web'],
     'as' => 'dashboard.',
     'prefix' => 'admin/dashboard'
 ], function () {
@@ -30,4 +34,16 @@ Route::group([
     Route::put('products/{product}/restore', [ProductsController::class, 'restore'])->name('products.restore');
     Route::delete('products/{product}/force-delete', [ProductsController::class, 'forceDelete'])->name('products.force-delete');
     Route::resource('products', ProductsController::class);
+
+    // Roles
+    Route::resource('roles', RolesController::class);
+
+    // Orders
+    Route::resource('orders', OrdersController::class);
+
+    // Admins
+    Route::resource('admins', AdminsController::class);
+
+    // Users
+    Route::resource('users', UsersController::class);
 });

@@ -11,6 +11,10 @@ use Illuminate\Support\Str;
 
 class ProductsController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Product::class, 'product');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,32 +31,29 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.products.create', [
+            'product' => new Product(),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+    public function show($id) {}
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        $tags = implode(',', $product->tags()->pluck('name')->toArray());
+        $product = Product::findOrFail($id);
 
+        $tags = implode(',', $product->tags()->pluck('name')->toArray());
         return view('dashboard.products.edit', compact('product', 'tags'));
     }
 
@@ -137,8 +138,10 @@ class ProductsController extends Controller
      */
     public function restore(Request $request, $id)
     {
-        $category = Product::onlyTrashed()->findOrFail($id);
-        $category->restore();
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $this->authorize('restore', $product);
+
+        $product->restore();
 
         return redirect()->route('dashboard.products.trash')->with('success', 'Product Restored Succussfully!');
     }
@@ -146,6 +149,8 @@ class ProductsController extends Controller
     public function forceDelete(Request $request, $id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
+        $this->authorize('forceDelete', $product);
+
         $product->forceDelete();
         // Delete Image if exists
         if ($product->image) {

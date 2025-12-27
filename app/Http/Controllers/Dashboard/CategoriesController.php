@@ -12,12 +12,15 @@ use Illuminate\Validation\Rules\File;
 
 class CategoriesController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Category::class, 'category');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-
         $categories = Category::with(['parent'])
             ->withCount('products')
             ->filter($request->query())
@@ -31,6 +34,7 @@ class CategoriesController extends Controller
      */
     public function create()
     {
+
         $parents = Category::all();
         $category = new Category();
 
@@ -63,6 +67,7 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
+
         // $category = Category::with(['products.store'])->findOrFail($id);
         return view('dashboard.categories.show', compact('category'));
     }
@@ -72,14 +77,6 @@ class CategoriesController extends Controller
      */
     public function edit(Category $category)
     {
-        // try {
-        //     $category = Category::findOrFail($category->id);
-        // } catch (Exception $e) {
-        //     return redirect()->route('dashboard.categories.index')->with('info', 'Page Not Found');
-        // }
-
-
-
         // SELECT * FROM categories WHERE id <> $id AND (parent_id IS NULL OR parent_id <> $id)
         // get all categories except the one we want to edit and its children
         $parents = Category::where('id', '<>', $id = $category->id)
@@ -97,6 +94,7 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+
         // Request Validation
         $request->validate(Category::rules($category->id));
 
@@ -129,6 +127,7 @@ class CategoriesController extends Controller
      */
     public function destroy(Category $category)
     {
+
         $category->delete();
 
         // Redirect With Message
@@ -143,6 +142,7 @@ class CategoriesController extends Controller
      */
     public function trash(Request $request)
     {
+
         $categories = Category::onlyTrashed()->filter($request->query())->paginate();
         return view('dashboard.categories.trash', compact('categories'));
     }
@@ -156,6 +156,7 @@ class CategoriesController extends Controller
      */
     public function restore(Request $request, $id)
     {
+
         $category = Category::onlyTrashed()->findOrFail($id);
         $category->restore();
 

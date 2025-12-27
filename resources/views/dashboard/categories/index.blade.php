@@ -11,13 +11,17 @@
 
     {{-- New Category Btn --}}
     <div class="d-flex justify-content-start">
-        <div class="mb-5 ">
-            <a href="{{ route('dashboard.categories.create') }}" class="btn btn-outline-primary">Create</a>
-        </div>
+        @can('create', App\Models\Category::class)
+            <div class="mb-5">
+                <a href="{{ route('dashboard.categories.create') }}" class="btn btn-outline-primary">Create</a>
+            </div>
+        @endcan
 
-        <div class="mb-5 mx-4">
-            <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-outline-danger">Trash Categories</a>
-        </div>
+        @can('trash', App\Models\Category::class)
+            <div class="mb-5 mx-4">
+                <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-outline-danger">Trash Categories</a>
+            </div>
+        @endcan
     </div>
     {{-- End Category Btn --}}
 
@@ -66,16 +70,20 @@
                     <td>{{ $category->status }}</td>
                     <td>{{ $category->created_at }}</td>
                     <td>
-                        <a href="{{ route('dashboard.categories.edit', [$category->id]) }}"
-                            class="btn btn-sm btn-success">Edit</a>
+                        @can('update', $category)
+                            <a href="{{ route('dashboard.categories.edit', [$category->id]) }}"
+                                class="btn btn-sm btn-success">Edit</a>
+                        @endcan
 
                     </td>
                     <td>
-                        <form action="{{ route('dashboard.categories.destroy', [$category->id]) }}" method="post">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
+                        @can('delete', $category)
+                            <form action="{{ route('dashboard.categories.destroy', [$category->id]) }}" method="post">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        @endcan
                     </td>
                 </tr>
             @empty

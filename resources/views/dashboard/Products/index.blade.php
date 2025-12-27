@@ -11,15 +11,19 @@
 
     {{-- New Category & Trash Btns --}}
     <div class="d-flex justify-content-start">
-        <div class="mb-5 ">
-            <a href="{{ route('dashboard.products.create') }}" class="btn btn-outline-primary">Create</a>
-        </div>
+        @can('create', App\Models\Product::class)
+            <div class="mb-5">
+                <a href="{{ route('dashboard.products.create') }}" class="btn btn-outline-primary">Create</a>
+            </div>
+        @endcan
 
-        <div class="mb-5 mx-4">
-            <a href="{{ route('dashboard.products.trash') }}" class="btn btn-outline-danger">Trash Products</a>
-        </div>
+        @can('trash', App\Models\Product::class)
+            <div class="mb-5 mx-4">
+                <a href="{{ route('dashboard.products.trash') }}" class="btn btn-outline-danger">Trash Products</a>
+            </div>
+        @endcan
     </div>
-    {{-- End  New Category & Trash Btns --}}
+    {{-- End New Product & Trash Btns --}}
 
 
     {{-- Alerts --}}
@@ -62,23 +66,32 @@
                     <td><img src="{{ asset('storage/' . $product->image) }}" alt="" height="50px"></td>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->name }}</td>
-                    <td><a
-                            href="{{ route('dashboard.categories.show', $product->category->id) }}">{{ $product->category->name }}</a>
+                    <td>
+                        @can('view', $product->category)
+                            <a
+                                href="{{ route('dashboard.categories.show', $product->category->id) }}">{{ $product->category->name }}</a>
+                        @else
+                            {{ $product->category->name }}
+                        @endcan
                     </td>
                     <td>{{ $product->store->name }}</td>
                     <td>{{ $product->status }}</td>
                     <td>{{ $product->created_at }}</td>
                     <td>
-                        <a href="{{ route('dashboard.products.edit', [$product->id]) }}"
-                            class="btn btn-sm btn-success">Edit</a>
+                        @can('update', $product)
+                            <a href="{{ route('dashboard.products.edit', [$product->id]) }}"
+                                class="btn btn-sm btn-success">Edit</a>
+                        @endcan
 
                     </td>
                     <td>
-                        <form action="{{ route('dashboard.products.destroy', [$product->id]) }}" method="post">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
+                        @can('delete', $product)
+                            <form action="{{ route('dashboard.products.destroy', [$product->id]) }}" method="post">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        @endcan
                     </td>
                 </tr>
             @empty
